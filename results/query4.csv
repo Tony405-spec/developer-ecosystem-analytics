@@ -1,11 +1,11 @@
-"company_name"	"ticker"	"number_of_technologies"
-"Amazon Web Services"		30
-"Apple Incorporated"	"AAPL "	6
-"Amazon.com Inc"	"AMZN "	4
-"Microsoft Corp."	"MSFT "	4
-"Google LLC"		3
-"Adobe Systems Incorporated"	"ADBE "	2
-"Dropbox"	"DBX  "	2
-"Citrix Systems"	"CTXS "	1
-"MongoDB"	"MDB  "	1
-"PayPal Holdings Incorporated"	"PYPL "	1
+"company_name","ticker","number_of_technologies"
+"Amazon Web Services",NULL,"30"
+"Apple Incorporated","AAPL ","6"
+"Amazon.com Inc","AMZN ","4"
+"Microsoft Corp.","MSFT ","4"
+"Google LLC",NULL,"3"
+"Adobe Systems Incorporated","ADBE ","2"
+"Dropbox","DBX  ","2"
+"Citrix Systems","CTXS ","1"
+"MongoDB","MDB  ","1"
+"PayPal Holdings Incorporated","PYPL ","1"
