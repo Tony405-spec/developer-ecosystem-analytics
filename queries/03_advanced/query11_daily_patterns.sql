@@ -1,36 +1,18 @@
--- Daily and hourly question patterns by technology.
-WITH expanded AS (
-    SELECT
-        technology_id,
-        EXTRACT(DOW FROM created_at)::int AS day_of_week,
-        EXTRACT(HOUR FROM created_at)::int AS hour_of_day
-    FROM stack_overflow_questions
-),
-aggregated AS (
-    SELECT
-        technology_id,
-        day_of_week,
-        hour_of_day,
-        COUNT(*) AS question_count
-    FROM expanded
-    GROUP BY technology_id, day_of_week, hour_of_day
-),
-normalized AS (
-    SELECT
-        a.*,
-        ROUND(
-            question_count::numeric /
-            NULLIF(SUM(question_count) OVER (PARTITION BY technology_id), 0),
-            4
-        ) AS share_of_week
-    FROM aggregated a
-)
-SELECT
-    tech.technology_name,
-    day_of_week,
-    hour_of_day,
-    question_count,
-    share_of_week
-FROM normalized n
-JOIN technologies tech ON tech.technology_id = n.technology_id
-ORDER BY tech.technology_name, day_of_week, hour_of_day;
+-- Analyze which days of week have highest developer activity
+SELECT 
+    EXTRACT(DOW FROM date) AS day_of_week,
+    CASE EXTRACT(DOW FROM date)
+        WHEN 0 THEN 'Sunday'
+        WHEN 1 THEN 'Monday'
+        WHEN 2 THEN 'Tuesday'
+        WHEN 3 THEN 'Wednesday'
+        WHEN 4 THEN 'Thursday'
+        WHEN 5 THEN 'Friday'
+        WHEN 6 THEN 'Saturday'
+    END AS day_name,
+    AVG(question_count) AS avg_daily_questions,
+    SUM(question_count) AS total_questions,
+    (AVG(unanswered_pct))::numeric(10,2) AS avg_unanswered_pct
+FROM stackoverflow
+GROUP BY EXTRACT(DOW FROM date)
+ORDER BY avg_daily_questions DESC;
