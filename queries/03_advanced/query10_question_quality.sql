@@ -1,26 +1,19 @@
--- Compare parent companies vs their subsidiaries' tech portfolios
-WITH company_techs AS (
-    SELECT 
-        c.id,
-        c.name,
-        c.parent_id,
-        COUNT(DISTINCT tc.tag) AS tech_count,
-        SUM(s.question_count) AS total_developer_questions
-    FROM company c
-    LEFT JOIN tag_company tc ON c.id = tc.company_id
-    LEFT JOIN stackoverflow s ON tc.tag = s.tag
-    GROUP BY c.id, c.name, c.parent_id
-)
+-- Analyze the relationship between question volume and answer quality
 SELECT 
-    parent.name AS parent_company,
-    COUNT(child.id) AS num_subsidiaries,
-    SUM(child.tech_count) AS total_technologies_across_subsidiaries,
-    SUM(child.total_developer_questions) AS total_developer_activity,
-    parent.tech_count AS parent_tech_count,
-    parent.total_developer_questions AS parent_developer_activity
-FROM company_techs parent
-JOIN company_techs child ON parent.id = child.parent_id
-WHERE parent.parent_id IS NULL
-GROUP BY parent.name, parent.tech_count, parent.total_developer_questions
-ORDER BY total_developer_activity DESC
-LIMIT 10;
+    tag,
+    SUM(question_count) AS total_questions,
+    (AVG(question_pct))::numeric(10,2) AS avg_question_share,
+    (AVG(unanswered_pct))::numeric(10,2) AS avg_unanswered_rate,
+    (100.0 * SUM(unanswered_count) / NULLIF(SUM(question_count), 0))::numeric(10,2) AS overall_unanswered_rate,
+    CASE 
+        WHEN SUM(question_count) > 10000 AND (100.0 * SUM(unanswered_count) / NULLIF(SUM(question_count), 0)) < 20 THEN 'High Volume, High Quality'
+        WHEN SUM(question_count) > 10000 AND (100.0 * SUM(unanswered_count) / NULLIF(SUM(question_count), 0)) > 30 THEN 'High Volume, Poor Quality'
+        WHEN SUM(question_count) < 1000 AND (100.0 * SUM(unanswered_count) / NULLIF(SUM(question_count), 0)) < 20 THEN 'Low Volume, High Quality'
+        WHEN SUM(question_count) < 1000 AND (100.0 * SUM(unanswered_count) / NULLIF(SUM(question_count), 0)) > 30 THEN 'Low Volume, Poor Quality'
+        ELSE 'Average'
+    END AS quality_category
+FROM stackoverflow
+GROUP BY tag
+HAVING SUM(question_count) >= 500
+ORDER BY total_questions DESC
+LIMIT 20;
