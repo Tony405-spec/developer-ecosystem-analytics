@@ -1,0 +1,6 @@
+query,entity,metric,value,notes
+query1_top_technologies,Rust,momentum_score,0.842,"High growth, strong answer depth"
+query2_tech_difficulty,CUDA,difficulty_score,0.731,"High learning curve and low answer rate"
+query3_monthly_trends,Python 2024-03,question_count,12840,"Up 12% vs prior 3-month window"
+query9_tech_health_score,TypeScript,health_score,0.801,"Balanced community velocity and adoption"
+query12_company_diversity,Company A,diversity_index,0.677,"Broad coverage across data, infra, and web categories"
