@@ -27,18 +27,44 @@ The analysis uses six interconnected PostgreSQL tables:
 | `ev311` | Municipal service data | category, date_created, street, zip |
 
 ##  Database Schema
-┌─────────────┐ ┌──────────────┐ ┌─────────────────┐
-│ company │────<│ tag_company │>────│ stackoverflow │
-├─────────────┤ ├──────────────┤ ├─────────────────┤
-│ id (PK) │ │ tag (PK) │ │ tag (FK) │
-│ name │ │ company_id │ │ date │
-│ ticker │ └──────────────┘ │ question_count │
-│ parent_id │ │ │ unanswered_pct │
-└─────────────┘ │ └─────────────────┘
-│ │
-│ ┌────────┴────────┐
-│ │ tag_type │
-│ ├─────────────────┤
-└────────────>│ tag (FK) │
-│ type │
-└─────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           DEVELOPER ECOSYSTEM DATABASE                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────┐     ┌──────────────┐     ┌─────────────────┐
+│   company   │────<│ tag_company  │>────│  stackoverflow  │
+├─────────────┤     ├──────────────┤     ├─────────────────┤
+│ id (PK)     │     │ tag (PK)     │     │ id (PK)         │
+│ exchange    │     │ company_id   │     │ tag (FK)        │
+│ ticker (UK) │     └──────────────┘     │ date            │
+│ name        │            │             │ question_count  │
+│ parent_id   │            │             │ question_pct    │
+└─────────────┘            │             │ unanswered_count│
+         │                  │             │ unanswered_pct  │
+         │ (self-ref)       │             └─────────────────┘
+         ↓                  │                      │
+    parent-child            │             ┌────────┴────────┐
+    relationship            │             │    tag_type     │
+                            │             ├─────────────────┤
+                            └────────────>│ id (PK)         │
+                                          │ tag (FK)        │
+                                          │ type            │
+                                          └─────────────────┘
+
+┌─────────────┐     ┌──────────────┐
+│  fortune500 │     │    ev311     │
+├─────────────┤     ├──────────────┤
+│ rank (PK)   │     │ id           │
+│ title (PK)  │     │ priority     │
+│ name (UK)   │     │ source       │
+│ ticker      │     │ category     │
+│ url         │     │ date_created │
+│ hq          │     │ date_completed│
+│ sector      │     │ street       │
+│ industry    │     │ house_num    │
+│ employees   │     │ zip          │
+│ revenues    │     │ description  │
+│ profits     │     └──────────────┘
+│ assets      │
+│ equity      │
+└─────────────┘
