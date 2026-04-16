@@ -1,44 +1,33 @@
--- Monthly question trends by technology with rolling 3-month growth.
-WITH monthly AS (
-    SELECT
-        DATE_TRUNC('month', created_at) AS month,
-        technology_id,
-        COUNT(*) AS question_count,
-        AVG(score) AS avg_score,
-        AVG(answer_count) AS avg_answers,
-        SUM(view_count) AS total_views
-    FROM stack_overflow_questions
-    GROUP BY 1, 2
-),
-with_growth AS (
-    SELECT
-        m.*,
-        LAG(question_count, 3) OVER (PARTITION BY technology_id ORDER BY month) AS questions_3mo_ago
-    FROM monthly m
-),
-scored AS (
-    SELECT
-        technology_id,
-        month,
-        question_count,
-        avg_score,
-        avg_answers,
-        total_views,
-        CASE
-            WHEN questions_3mo_ago = 0 THEN NULL
-            ELSE (question_count - questions_3mo_ago) / NULLIF(questions_3mo_ago::numeric, 0)
-        END AS growth_vs_prior_3mo
-    FROM with_growth
-)
-SELECT
-    tech.technology_name,
-    tech.category,
-    s.month,
-    s.question_count,
-    s.growth_vs_prior_3mo,
-    s.avg_answers,
-    s.avg_score,
-    s.total_views
-FROM scored s
-JOIN technologies tech ON tech.technology_id = s.technology_id
-ORDER BY tech.technology_name, s.month;
+-- First, find what tags actually exist in your data
+-- Then run this with actual tags from your data
+
+-- Version 1: Show top 5 tags by total questions first
+SELECT 
+    tag,
+    SUM(question_count) AS total_questions
+FROM stackoverflow
+GROUP BY tag
+ORDER BY total_questions DESC
+LIMIT 5;
+
+-- Version 2: Then use those actual tags (replace 'python' with real tags from above)
+SELECT 
+    tag,
+    DATE_TRUNC('month', date) AS month,
+    SUM(question_count) AS monthly_questions,
+    SUM(unanswered_count) AS monthly_unanswered,
+    (AVG(unanswered_pct))::numeric(10,2) AS avg_unanswered_pct
+FROM stackoverflow
+WHERE tag IN ('javascript', 'python', 'java', 'c#', 'php')  -- Use tags from your data
+GROUP BY tag, DATE_TRUNC('month', date)
+ORDER BY tag, month DESC;
+
+-- Version 3: Show all tags that have any data
+SELECT 
+    tag,
+    DATE_TRUNC('month', date) AS month,
+    SUM(question_count) AS monthly_questions
+FROM stackoverflow
+GROUP BY tag, DATE_TRUNC('month', date)
+ORDER BY month DESC, monthly_questions DESC
+LIMIT 50;
