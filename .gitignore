@@ -1,0 +1,13 @@
+# PostgreSQL connection and client artifacts
+.pgpass
+.pg_service.conf
+.pg_service.conf.json
+.psql_history
+.psqlrc
+pg_service.conf
+
+# Environment and local tooling
+.env
+.env.*
+.DS_Store
+*.log

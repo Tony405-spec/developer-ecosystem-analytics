@@ -1,32 +1,73 @@
-#  Developer Ecosystem Analytics Platform
+# developer-ecosystem-analytics
 
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-12+-316192?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+PostgreSQL workspace for exploring why developer technologies succeed or fail. The repo packages 12 reusable SQL queries that combine community activity, company adoption, and survey sentiment to measure technology momentum and developer experience.
 
-##  Project Overview
+## Repository Layout
 
-A comprehensive analytics platform that extracts actionable insights from StackOverflow developer activity, corporate technology ownership, and financial data. This project answers critical questions like:
+```
+developer-ecosystem-analytics/
+├── README.md
+├── LICENSE
+├── .gitignore
+├── queries/
+│   ├── 01_basic/
+│   │   ├── query1_top_technologies.sql
+│   │   ├── query2_tech_difficulty.sql
+│   │   └── query3_monthly_trends.sql
+│   ├── 02_intermediate/
+│   │   ├── query4_companies_most_tags.sql
+│   │   ├── query5_tech_categories.sql
+│   │   ├── query6_hardest_per_company.sql
+│   │   └── query7_growth_momentum.sql
+│   └── 03_advanced/
+│       ├── query8_parent_company_analysis.sql
+│       ├── query9_tech_health_score.sql
+│       ├── query10_question_quality.sql
+│       ├── query11_daily_patterns.sql
+│       └── query12_company_diversity.sql
+├── results/
+│   └── sample_outputs.csv
+├── docs/
+│   ├── schema_diagram.md
+│   └── methodology.md
+└── scripts/
+    └── diagnostic_queries.sql
+```
 
-- **Which technologies are growing or dying?**
-- **What makes a technology ecosystem healthy?**
-- **How do corporate structures affect developer engagement?**
-- **Which companies have the strongest developer communities?**
+## Data Model (summary)
 
-## Dataset Description
+This project assumes the following core tables (see `docs/schema_diagram.md` for details):
 
-The analysis uses six interconnected PostgreSQL tables:
+- `technologies`: technology dimension with category, release year, and lifecycle flags.
+- `stack_overflow_questions` and `stack_overflow_question_tags`: community activity by tag, score, answers, and closure.
+- `developer_sentiment`: survey responses for satisfaction, adoption, and learning curve.
+- `companies`: Fortune 500–style company dimension with parent relationships.
+- `company_tech_adoption`: declared technology stacks and adoption depth by company.
+- `company_question_mentions`: questions attributed or mapped to companies.
 
-| Table | Description | Key Fields |
-|-------|-------------|------------|
-| `company` | Corporate entities | id, name, ticker, parent_id |
-| `stackoverflow` | Daily developer questions | tag, date, question_count, unanswered_pct |
-| `tag_company` | Tech-to-company mapping | tag, company_id |
-| `tag_type` | Technology categorization | tag, type (language/framework/database) |
-| `fortune500` | Financial metrics | rank, name, revenues, profits, employees |
-| `ev311` | Municipal service data | category, date_created, street, zip |
+## Running the queries
 
-##  Database Schema 
-<p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Orbitron&size=22&color=FF073A&center=true&vCenter=true&width=1200&lines=┌─────────────────────────────────────────────────────────────────────────────┐;│+++++++++++DEVELOPER+ECOSYSTEM+DATABASE++++++++++++│;└─────────────────────────────────────────────────────────────────────────────┘;┌─────────────┐+++++┌──────────────┐+++++┌─────────────────┐;│+++company+++│────<│+tag_company++│>────│++stackoverflow++│;├─────────────┤+++++├──────────────┤+++++├─────────────────┤;│+id+(PK)+++++│+++++│+tag+(PK)+++++│+++++│+id+(PK)+++++++++│;│+exchange++++│+++++│+company_id+++│+++++│+tag+(FK)++++++++│;│+ticker+(UK)+│+++++└──────────────┘+++++│+date++++++++++++│;│+name++++++++│++++++++++++│++++++++++++│+question_count++│;│+parent_id+++│++++++++++++│++++++++++++│+question_pct++++│;└─────────────┘++++++++++++│++++++++++++│+unanswered_count│;+++++++++│++++++++++++++++│++++++++++++│+unanswered_pct++│;+++++++++│+(self-ref)++++│++++++++++++└─────────────────┘;+++++++++↓++++++++++++++++│++++++++++++++++++++│;++++parent-child++++++++│++++++++++++┌────────┴────────┐;++++relationship++++++++│++++++++++++│++++tag_type++++│;++++++++++++++++++++++++│++++++++++++├─────────────────┤;++++++++++++++++++++++++└───────────>│+id+(PK)+++++++++│;++++++++++++++++++++++++++++++++++++│+tag+(FK)++++++++│;++++++++++++++++++++++++++++++++++++│+type++++++++++++│;++++++++++++++++++++++++++++++++++++└─────────────────┘;┌─────────────┐+++++┌──────────────┐;│++fortune500+│+++++│++++ev311+++++│;├─────────────┤+++++├──────────────┤;│+rank+(PK)+++│+++++│+id+++++++++++│;│+title+(PK)++│+++++│+priority+++++│;│+name+(UK)+++│+++++│+source+++++++│;│+ticker++++++│+++++│+category+++++│;│+url+++++++++│+++++│+date_created+│;│+hq++++++++++│+++++│+date_completed│;│+sector++++++│+++++│+street+++++++│;│+industry++++│+++++│+house_num++++│;│+employees+++│+++++│+zip++++++++++│;│+revenues++++│+++++│+description++│;│+profits+++++│+++++└──────────────┘;│+assets++++++│;│+equity++++++│;└─────────────┘" alt="Database Schema" />
-</p>
+1. Load your data into PostgreSQL following the column names described in `docs/schema_diagram.md`.
+2. Execute any query with `psql`:
+   ```bash
+   psql "$DATABASE_URL" -f queries/01_basic/query1_top_technologies.sql
+   ```
+3. Copy results into `results/` for sharing or downstream dashboards.
+
+The queries are written in standard PostgreSQL (tested with 14+) and avoid vendor extensions.
+
+## Query Catalog
+
+- Basic: top trending technologies, learning difficulty, monthly adoption trends.
+- Intermediate: company tagging volume, category-level rollups, hardest tech per company, and growth momentum scores.
+- Advanced: parent-company rollups, composite health scores, question-quality assessment, intraday patterns, and stack diversity by company.
+
+Descriptions and scoring logic are documented inline in each SQL file and expanded in `docs/methodology.md`.
+
+## Diagnostics
+
+Run `scripts/diagnostic_queries.sql` to sanity-check row counts, null density, and reference integrity before running analytics.
+
+## Contributing
+
+Open an issue or PR with suggested tweaks to scoring, additional metrics, or new data sources. Keep SQL portable to PostgreSQL and update the docs when schema changes.
