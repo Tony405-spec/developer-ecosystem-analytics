@@ -1,37 +1,19 @@
--- Company technology stack diversity using Shannon entropy across categories.
-WITH company_stack AS (
-    SELECT
-        c.company_id,
-        c.company_name,
-        tech.category,
-        COUNT(*) AS tech_count
-    FROM company_tech_adoption cta
-    JOIN companies c ON c.company_id = cta.company_id
-    JOIN technologies tech ON tech.technology_id = cta.technology_id
-    GROUP BY c.company_id, c.company_name, tech.category
-),
-share AS (
-    SELECT
-        company_id,
-        company_name,
-        category,
-        tech_count,
-        tech_count::numeric / NULLIF(SUM(tech_count) OVER (PARTITION BY company_id), 0) AS pct_category
-    FROM company_stack
-),
-entropy AS (
-    SELECT
-        company_id,
-        company_name,
-        COUNT(*) AS categories,
-        -SUM(pct_category * LN(pct_category)) / NULLIF(LN(COUNT(*)), 0) AS normalized_entropy
-    FROM share
-    GROUP BY company_id, company_name
-)
-SELECT
-    e.company_name,
-    e.categories AS category_breadth,
-    ROUND(e.normalized_entropy, 3) AS diversity_index
-FROM entropy e
-ORDER BY diversity_index DESC NULLS LAST
-LIMIT 25;
+-- Calculate technology diversity score for each company
+SELECT 
+    c.name AS company_name,
+    COUNT(DISTINCT tc.tag) AS num_technologies,
+    COUNT(DISTINCT tt.type) AS num_tech_categories,
+    SUM(s.question_count) AS total_developer_questions,
+    ROUND((SUM(s.question_count) * 1.0 / NULLIF(COUNT(DISTINCT tc.tag), 0))::numeric, 2) AS avg_questions_per_tech,
+    CASE 
+        WHEN COUNT(DISTINCT tt.type) >= 3 THEN 'High Diversity'
+        WHEN COUNT(DISTINCT tt.type) >= 2 THEN 'Medium Diversity'
+        ELSE 'Low Diversity'
+    END AS diversity_rating
+FROM company c
+JOIN tag_company tc ON c.id = tc.company_id
+LEFT JOIN tag_type tt ON tc.tag = tt.tag
+LEFT JOIN stackoverflow s ON tc.tag = s.tag
+GROUP BY c.id, c.name
+ORDER BY total_developer_questions DESC
+LIMIT 10;
