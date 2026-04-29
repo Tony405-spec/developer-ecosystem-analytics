@@ -1,3 +1,15 @@
+<p align="center">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=22&pause=800&color=2E8B57&center=true&vCenter=true&width=1200&lines=⟫_POSTGRES_ANALYTICS_ENGINE_⟪;>>>_LOADING_SCHEMA_[██████████]_100%25;>>>_12_QUERIES_LOADED_::_BASIC_→_ADVANCED;>>>_COMPOSITE_HEALTH_SCORES_READY;>>>_TYPE_PSQL_$DATABASE_URL_..._TO_BEGIN" alt="Postgres Typing Banner" />
+</p>
+
+<br>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/DATABASE-PostgreSQL-2E8B57?style=for-the-badge&logo=postgresql&logoColor=white&labelColor=black"/>
+  <img src="https://img.shields.io/badge/QUERIES-12_REUSABLE-2E8B57?style=for-the-badge&logo=sql&logoColor=white&labelColor=black"/>
+  <img src="https://img.shields.io/badge/STATUS-ANALYTICS_READY-2E8B57?style=for-the-badge&logo=github&logoColor=white&labelColor=black"/>
+</p>
+
 # developer-ecosystem-analytics
 
 PostgreSQL workspace for exploring why developer technologies succeed or fail. The repo packages 12 reusable SQL queries that combine community activity, company adoption, and survey sentiment to measure technology momentum and developer experience.
