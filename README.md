@@ -10,6 +10,14 @@
   <img src="https://img.shields.io/badge/STATUS-ANALYTICS_READY-2E8B57?style=for-the-badge&logo=github&logoColor=white&labelColor=black"/>
 </p>
 
+## 🔥 Live Demo
+
+<p align="center">
+  <img src="assets/tech_risk_demo.gif" alt="Running SQL risk analysis" width="90%">
+</p>
+
+*Running the tech risk assessment query on the stockexchange database.*
+
 # developer-ecosystem-analytics
 
 PostgreSQL workspace for exploring why developer technologies succeed or fail. The repo packages 12 reusable SQL queries that combine community activity, company adoption, and survey sentiment to measure technology momentum and developer experience.
