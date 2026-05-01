@@ -92,3 +92,6 @@ Run `scripts/diagnostic_queries.sql` to sanity-check row counts, null density, a
 ## Contributing
 
 Open an issue or PR with suggested tweaks to scoring, additional metrics, or new data sources. Keep SQL portable to PostgreSQL and update the docs when schema changes.
+
+## **`Gist`**
+https://gist.github.com/Tony405-spec/82bbd137d85ada850acdffc90c192486
